@@ -6,9 +6,10 @@ import { cookies } from "next/headers";
 export default async function Home() {
   const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
-    console.log(accessToken)
+    // console.log(accessToken)
   const userInfo = await getUser(accessToken);
-  // console.log("userInfo", userInfo)
+  const userId = userInfo?._id;
+  // console.log("userInfo", userInfo._id);
   return (
     <div className="flex flex-col h-screen w-full overflow-y-auto ">
       <div className="p-4 shadow sticky top-0 w-full flex justify-between items-center bg-white z-10">
@@ -16,7 +17,7 @@ export default async function Home() {
         <ProfileBox userInfo={userInfo}/>
       </div>
       <div className="w-full flex justify-center">
-       <ChatBox/>
+       <ChatBox userId={userId}/>
        </div>
     </div>
   );

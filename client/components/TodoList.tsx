@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { useTodoStore } from "@/store/todoStore";
 import TodoItem from "./TodoItem";
 
-export default function TodoList() {
+export default function TodoList({userId}: {userId: string}) {
   const { todos, fetchTodos, addTodo, toggleTodo, deleteTodo } =
     useTodoStore() as any;
 
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    fetchTodos(userId);
+  }, [userId]);
 
   return (
     <div className="p-4 max-w-xl mx-auto space-y-4">
@@ -26,7 +26,7 @@ export default function TodoList() {
         />
         <button
           onClick={() => {
-            addTodo(input);
+            addTodo(input, userId);
             setInput("");
           }}
           className="bg-green-600 px-3 rounded"
@@ -35,10 +35,11 @@ export default function TodoList() {
         </button>
       </div>
 
-      {todos.map((todo: any) => (
+      {todos?.map((todo: any) => (
         <TodoItem
           key={todo._id}
           todo={todo}
+          userId={userId}
           onToggle={toggleTodo}
           onDelete={deleteTodo}
         />

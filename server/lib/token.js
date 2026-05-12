@@ -3,12 +3,13 @@ import jwt from "jsonwebtoken";
 // create access token
 export const createAccessToken = (
   userId,
-  name
+  name,
+  tokenVersion,
 ) => {
-  const payload = { sub: userId, name };
+  const payload = { sub: userId, name, tokenVersion };
 
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: "30m",
+    expiresIn: "15m",
   });
 };
 
@@ -18,15 +19,15 @@ export const verifyAccessToken = (token) => {
 };
 
 // create refresh token
-export const createRefreshToken = (userId) => {
-  const payload = { sub: userId };
+export const createRefreshToken = (userId, tokenVersion) => {
+  const payload = { sub: userId, tokenVersion };
 
-  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
 };
 
 // verify refresh token
 export const verifyRefreshToken = (token) => {
-  return jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+  return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 };

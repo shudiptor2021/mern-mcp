@@ -94,8 +94,8 @@ export const googleAuthCallbackHandler = async (req, res) => {
       });
     }
 
-    const accessToken = createAccessToken(user.id, user.name);
-    const refreshToken = createRefreshToken(user.id);
+    const accessToken = createAccessToken(user.id, user.name, user.tokenVersion);
+    const refreshToken = createRefreshToken(user.id, user.tokenVersion);
 
     const isProd = process.env.NODE_ENV === "production";
 
@@ -104,7 +104,7 @@ export const googleAuthCallbackHandler = async (req, res) => {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
-      maxAge: 30 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -154,9 +154,9 @@ export const refreshHandler = async (req, res) => {
       return res.status(401).json({ message: "Refresh token invalidate!" });
     }
 
-    const newAccessToken = createAccessToken(user.id, user.name);
+    const newAccessToken = createAccessToken(user.id, user.name, user.tokenVersion);
 
-    const newRefreshToken = createRefreshToken(user.id);
+    const newRefreshToken = createRefreshToken(user.id, user.tokenVersion);
 
     const isProd = process.env.NODE_ENV === "production";
 
@@ -165,7 +165,7 @@ export const refreshHandler = async (req, res) => {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
-      maxAge: 30 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
     
     res.cookie("refreshToken", newRefreshToken, {

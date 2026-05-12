@@ -7,7 +7,7 @@ import MessageBubble from "./MessageBubble";
 import { FaArrowUp } from "react-icons/fa";
 
 
-export default function ChatBox() {
+export default function ChatBox({userId}: {userId: string}) {
   const { messages, addMessage, updateLastMessage } = useChatStore();
   const [input, setInput] = useState("");
 
@@ -20,7 +20,7 @@ export default function ChatBox() {
     const userInput = input;
     setInput("");
 
-    await sendMessage(userInput, (chunk) => {
+    await sendMessage(userInput, userId, (chunk) => {
       updateLastMessage(chunk);
     });
   };

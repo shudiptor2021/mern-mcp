@@ -1,4 +1,4 @@
-export default function TodoItem({ todo, onToggle, onDelete }: any) {
+export default function TodoItem({ todo, userId, onToggle, onDelete }: any) {
   return (
     <div className="flex justify-between bg-blue-200 p-3 rounded">
        <div className="flex items-center gap-3">
@@ -6,7 +6,7 @@ export default function TodoItem({ todo, onToggle, onDelete }: any) {
         <input
           type="checkbox"
           checked={todo.completed}
-          onChange={() => onToggle(todo._id, !todo.completed)}
+          onChange={() => onToggle(todo._id, !todo.completed, userId)}
           className="w-5 h-5 cursor-pointer"
         />
 

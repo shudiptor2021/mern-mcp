@@ -11,13 +11,14 @@ export const refreshToken = async () => {
   }
 
   const data = await res.json();
+  console.log("new access token", data.accessToken);
 
-  setAccessToken(data.accessToken);
+  // setAccessToken(data.accessToken);
 
   return data.accessToken;
 };
 
-export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+export const fetchWithAuth = async (url: string, options: RequestInit = {}, accessToken: string) => {
   let token = getAccessToken();
 
   let res = await fetch(url, {
@@ -25,10 +26,10 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     credentials: "include",
     headers: {
       ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
-  });
+  }, );
 
   // token expired
   if (res.status === 401) {
@@ -45,7 +46,7 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
         },
       });
     } catch (err) {
-      window.location.href = "/login";
+      window.location.href = "/";
       throw err;
     }
   }

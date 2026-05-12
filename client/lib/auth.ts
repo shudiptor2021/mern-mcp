@@ -1,5 +1,6 @@
 'use server'
 import { cookies } from "next/headers";
+import { fetchWithAuth } from "./fetchWithAuth";
 
 // get user info
 export const getUser = async (accessToken: any) => {
@@ -9,19 +10,29 @@ export const getUser = async (accessToken: any) => {
     if (!accessToken) {
         return null;
     }
-    const res = await fetch(`http://localhost:5000/api/v1/auth/userme`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+    // const res = await fetch(`http://localhost:5000/api/v1/auth/userme`, {
+    //     method: "GET",
+    //     credentials: "include",
+    //     headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
 
-    } );
-
-    const data = await res.json();
+    // } );
+    // const data = await res.json();
+    
     // console.log(data);
-    return data.user;
+
+    const res = await fetchWithAuth(`http://localhost:5000/api/v1/auth/userme`, {
+        method: "GET",
+      },
+      accessToken
+
+    );
+
+    const user = res.user;
+    
+    return user;
 }
 
 export const userLogout = async () => {

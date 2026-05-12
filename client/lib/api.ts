@@ -1,12 +1,12 @@
 const BASE_URL = "http://localhost:5000/api/v1/assistant"; // backend
 
-export const sendMessage = async (message: string, onChunk: (chunk: string) => void) => {
+export const sendMessage = async (message: string, userId: string, onChunk: (chunk: string) => void) => {
   const res = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message,
-      userId: "demo-user",
+      userId,
     }),
   });
 
@@ -24,16 +24,16 @@ export const sendMessage = async (message: string, onChunk: (chunk: string) => v
 
 
 // TODOS
-export const getTodos = async () => {
-  const res = await fetch(`${BASE_URL}/todos`);
+export const getTodos = async (userId: string) => {
+  const res = await fetch(`${BASE_URL}/todos?userId=${userId}`);
   return res.json();
 };
 
-export const createTodo = async (title: string) => {
+export const createTodo = async (title: string, userId: string) => {
   const res = await fetch(`${BASE_URL}/todos`, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, userId }),
   });
   return res.json();
 };
