@@ -4,7 +4,7 @@ import { getMeetingsService } from "../services/calendar.service.js";
 export const checkConflictTool = {
   name: "check_conflict",
   schema: z.object({
-    userId: z.string(),
+    userId: z.string().optional(),
     time: z.string(),
   }),
   execute: async ({ userId, time }) => {

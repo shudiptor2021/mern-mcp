@@ -10,6 +10,9 @@ import { getTodosTool } from "./tools/todo/getTodos.tool.js";
 import { updateTodoTool } from "./tools/todo/updateTodo.tool.js";
 import { deleteTodoTool } from "./tools/todo/deleteTodo.tool.js";
 import connectDB from "./config/db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -50,6 +53,34 @@ app.post("/mcp", async (req, res) => {
         }),
       );
     };
+
+//     const register = (tool) => {
+//   server.registerTool(
+//     tool.name,
+//     {
+//       title: tool.name,
+//       inputSchema: tool.schema,
+//     },
+
+//     async (input) => {
+//       const finalInput = {
+//         ...input,
+//         userId: req.user._id.toString(),
+//       };
+
+//       return {
+//         content: [
+//           {
+//             type: "text",
+//             text: JSON.stringify(
+//               await tool.execute(finalInput)
+//             ),
+//           },
+//         ],
+//       };
+//     }
+//   );
+// };
 
     // register google calendar tools
     register(getMeetingsTool);

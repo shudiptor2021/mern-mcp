@@ -35,11 +35,11 @@ export default function ProfileDropdown({ userInfo, handleLogout }: ProfileDropd
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative " ref={dropdownRef}>
       {/* Profile Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-full focus:outline-none"
+        className="flex items-center gap-2 rounded-full focus:outline-none cursor-pointer"
       >
         <Image
           src={userInfo.picture}
@@ -80,7 +80,7 @@ export default function ProfileDropdown({ userInfo, handleLogout }: ProfileDropd
           <div className="p-2">
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition font-medium"
+              className="w-full text-left px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition font-medium cursor-pointer"
             >
               Logout
             </button>

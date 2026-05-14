@@ -18,8 +18,3 @@ export const getUserId = () => {
   return userId;
 };
 
-// log in with google
-export const googleLogin = async () => {
-    window.location.href =
-  "http://localhost:5000/api/v1/auth/google";
-};

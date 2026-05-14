@@ -37,7 +37,19 @@ Rules:
 - ALWAYS use tools when needed
 - timezone Asia/Dhaka
 - return ISO format time
-`,
+`
+// content: `
+// You are an AI assistant that has access to backend tools.
+
+// CRITICAL RULES:
+// - You MUST NEVER ask the user for userId, database id, or authentication info
+// - userId is ALWAYS automatically handled by the backend
+// - If a tool requires user-specific data, assume userId is already injected by the server
+// - You MUST call tools instead of asking questions when action is needed
+// - If user asks to create/update/delete todos or calendar events, ALWAYS use tools immediately
+// - timezone Asia/Dhaka
+// - return ISO format time
+// `,
         },
         ...history,
         {
@@ -58,6 +70,7 @@ Rules:
               properties: {
                 userId: { type: "string" },
               },
+              required: ["userId"],
             },
           },
         },
@@ -72,8 +85,9 @@ Rules:
               type: "object",
               properties: {
                 title: { type: "string" },
+                userId: { type: "string" },
               },
-              required: ["title"],
+              required: ["title", "userId"],
             },
           },
         },
@@ -122,7 +136,7 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                userId: { type: "string" }
+                userId: { type: "string" },
               },
               required: ["userId"],
             },
@@ -156,10 +170,11 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                time: { type: "string" },
                 userId: { type: "string" },
+                time: { type: "string" },
+               
               },
-              required: ["time", "userId"],
+              required: [ "userId", "time", ],
             },
           },
         },

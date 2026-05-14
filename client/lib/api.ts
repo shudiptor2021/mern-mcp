@@ -1,12 +1,13 @@
 const BASE_URL = "http://localhost:5000/api/v1/assistant"; // backend
 
-export const sendMessage = async (message: string, userId: string, onChunk: (chunk: string) => void) => {
+export const sendMessage = async (message: string, accessToken: string, userId: string, onChunk: (chunk: string) => void) => {
   const res = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}` },
     body: JSON.stringify({
       message,
-      userId,
+      userId
     }),
   });
 
@@ -20,6 +21,18 @@ export const sendMessage = async (message: string, userId: string, onChunk: (chu
     const chunk = decoder.decode(value);
     onChunk(chunk);
   }
+};
+
+// log in with google
+export const googleLogin = async () => {
+    window.location.href =
+  "http://localhost:5000/api/v1/auth/google";
+};
+
+// connect with google calendar
+export const googleCalendarConnect = async (userId: string) => {
+    window.location.href =
+  `http://localhost:5000/api/v1/auth/google/calendar/connect?userId=${userId}`;
 };
 
 

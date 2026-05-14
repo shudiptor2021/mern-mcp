@@ -1,4 +1,4 @@
-import { calendar } from "../config/googleAuth.js";
+import { getCalendarClient } from "../config/googleAuth.js";
 
 export const getMeetingsService = async (userId) => {
    const calendar = await getCalendarClient(userId);

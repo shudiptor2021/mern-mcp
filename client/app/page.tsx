@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 export default async function Home() {
   const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const accessToken = cookieStore.get("accessToken")?.value || "";
     // console.log(accessToken)
   const userInfo = await getUser(accessToken);
   const userId = userInfo?._id;
@@ -17,7 +17,7 @@ export default async function Home() {
         <ProfileBox userInfo={userInfo}/>
       </div>
       <div className="w-full flex justify-center">
-       <ChatBox userId={userId}/>
+       <ChatBox userId={userId} accessToken={accessToken}/>
        </div>
     </div>
   );

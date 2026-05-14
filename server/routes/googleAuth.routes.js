@@ -40,7 +40,8 @@ router.get("/callback", async (req, res) => {
       },
     });
 
-    res.send("✅ Google Calendar connected সফলভাবে");
+    // res.send("✅ Google Calendar connected সফলভাবে");
+    return res.redirect("http://localhost:3000");
   } catch (err) {
     console.error(err);
     res.status(500).send("Auth failed");

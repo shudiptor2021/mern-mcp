@@ -5,6 +5,7 @@ import { saveMessage } from "../services/memory.service.js";
 
 export const handleChat = async (req, res) => {
   const { message, userId } = req.body;
+  // const userId = req.user.id;
 
   // headers for streaming
   res.setHeader("Content-Type", "text/plain; charset=utf-8");

@@ -1,18 +1,25 @@
 "use client";
 
-import { googleLogin } from "@/store/authStore";
+
 import Image from "next/image";
 import { SiGooglecalendar } from "react-icons/si";
 import { FcGoogle } from "react-icons/fc";
 import ProfileDropdown from "./ProfileDropdown";
 import { userLogout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { googleCalendarConnect, googleLogin } from "@/lib/api";
 
 
 const ProfileBox = ({ userInfo }: { userInfo: any }) => {
   const router = useRouter();
+  const userId = userInfo?._id;
+  // google login
   const handleLogin = async () => {
     await googleLogin();
+  };
+  // calendar connect
+  const handleCalendarConnect = async () => {
+    await googleCalendarConnect(userId);
   };
   const handleLogout = async () => {
   try {
@@ -28,10 +35,10 @@ const ProfileBox = ({ userInfo }: { userInfo: any }) => {
   }
 };
   return (
-    <div className="flex items-center gap-4 p-3">
+    <div className="flex items-center gap-4 p-3 ">
       {userInfo && (
-        <button className="flex items-center gap-2 border border-blue-600 bg-blue-400 text-white px-3 py-2 rounded font-semibold text-sm">
-          Connect to Calendar{" "}
+         <button onClick={handleCalendarConnect} className="flex items-center gap-2 border border-blue-600 bg-blue-400 text-white px-3 py-2 rounded font-semibold text-sm cursor-pointer hover:bg-blue-500 transition">
+             {userInfo.google?.connected ? "Connected" : "Connect to Calendar"}
           <span>
             <SiGooglecalendar size={20} />
           </span>
