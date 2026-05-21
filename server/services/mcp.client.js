@@ -36,7 +36,7 @@ import axios from "axios";
 //   return res.data;
 // };
 
-export const callMCP = async (toolName, args) => {
+export const callMCP = async (toolName, args, userId) => {
   try {
     const res = await axios.post(
       "http://localhost:4000/mcp",
@@ -52,6 +52,7 @@ export const callMCP = async (toolName, args) => {
       {
         headers: {
           "Content-Type": "application/json",
+          "x-user-id": userId,
           "Accept": "application/json, text/event-stream" , // <--- required
         },
       }

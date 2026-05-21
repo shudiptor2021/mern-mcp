@@ -6,6 +6,7 @@ import googleCaneldarRouter from "./routes/googleAuth.routes.js";
 import googleAuthRouter from "./routes/user.routes.js"; 
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(
     })
 )
 app.use(express.json());
-
+app.use(cookieParser());
 app.use('/api/v1/assistant', chatRouter);
 app.use("/api/v1/assistant/todos", todoRouter);
 app.use("/api/v1/auth/google/calendar", googleCaneldarRouter);

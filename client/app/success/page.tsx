@@ -1,35 +1,39 @@
-'use client';
-import { getUser } from "@/lib/auth";
-import { setUserId } from "@/store/authStore";
-import { useRouter, useSearchParams } from "next/navigation";
+"use client";
+
 import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { getUser } from "@/lib/auth";
 
-
-const AuthSuccessPage = () => {
-    // const params = useSearchParams();
+export default function AuthSuccessPage() {
+  const params = useSearchParams();
   const router = useRouter();
 
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+
   useEffect(() => {
-    const handleAuthSuccess = async () => {
-    //   const accessToken = params.get("accessToken");
+    const login = async () => {
+      const token = params.get("token");
+      console.log(token)
 
-    //   if (!accessToken) {
-    //     return;
-    //   }
+      if (!token) {
+        router.push("/");
+        return;
+      }
 
-     await getUser();
+      // token save
+      setAccessToken(token);
 
-      // setUserId(data.user)
+      // immediately user fetch
+      const user =await getUser();
+      useAuthStore.getState().setUser(user);
+      // console.log(user)
+
+      // redirect
       router.push("/");
     };
+    login();
+  }, [params, router, setAccessToken]);
 
-    handleAuthSuccess();
-  }, [router]);
-  return (
-    <div>
-        <h1>Logging in...</h1>
-    </div>
-  )
+  return <div>Logging in...</div>;
 }
-
-export default AuthSuccessPage;

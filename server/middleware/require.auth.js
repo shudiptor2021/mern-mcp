@@ -7,7 +7,8 @@ import User from "../models/user.model.js";
   res,
   next,
 ) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;;
+
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res

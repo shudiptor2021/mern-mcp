@@ -2,7 +2,7 @@ import { OAuth2Client } from "google-auth-library";
 import User from "../models/user.model.js";
 import { hashPassword } from "../lib/hash.js";
 import crypto from "crypto";
-import { createAccessToken, createRefreshToken } from "../lib/token.js";
+import { createAccessToken, createRefreshToken, verifyRefreshToken } from "../lib/token.js";
 
 const getGoogleClient = () => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -104,7 +104,7 @@ export const googleAuthCallbackHandler = async (req, res) => {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 5 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -114,11 +114,12 @@ export const googleAuthCallbackHandler = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect("http://localhost:3000");
+    return res.redirect(`http://localhost:3000/success?token=${accessToken}`);
 
     // return res.json({
     //   message: "Google login successfully",
     //   accessToken,
+    //   refreshToken,
     //   user: {
     //     id: user.id,
     //     email: user.email,
@@ -143,6 +144,16 @@ export const refreshHandler = async (req, res) => {
       return res.status(401).json({ message: "Refresh token missing" });
     }
 
+    // const authHeader = req.headers.authorization;
+
+    // if (!authHeader?.startsWith("Bearer ")) {
+    //   return res.status(401).json({
+    //     message: "Refresh token missing",
+    //   });
+    // }
+
+    // const token = authHeader.split(" ")[1];
+
     const payload = verifyRefreshToken(token);
 
     const user = await User.findById(payload.sub);
@@ -165,7 +176,7 @@ export const refreshHandler = async (req, res) => {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 5 * 60 * 1000,
     });
     
     res.cookie("refreshToken", newRefreshToken, {

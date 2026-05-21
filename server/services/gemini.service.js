@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
-export const runAgent = async (message, userId) => {
+export const runAgent = async (message, userId, allowTools = true) => {
   try {
     const history = await getHistory(userId);
     // console.log(history)
@@ -68,9 +68,9 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                userId: { type: "string" },
+                // userId: { type: "string" },
               },
-              required: ["userId"],
+              // required: ["userId"],
             },
           },
         },
@@ -85,9 +85,9 @@ Rules:
               type: "object",
               properties: {
                 title: { type: "string" },
-                userId: { type: "string" },
+                // userId: { type: "string" },
               },
-              required: ["title", "userId"],
+              required: ["title"],
             },
           },
         },
@@ -136,9 +136,9 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                userId: { type: "string" },
+                // userId: { type: "string" },
               },
-              required: ["userId"],
+              // required: ["userId"],
             },
           },
         },
@@ -151,12 +151,12 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                userId: { type: "string" },
+                // userId: { type: "string" },
                 title: { type: "string" },
                 start: { type: "string" },
                 end: { type: "string" },
               },
-              required: ["userId", "title", "start", "end"],
+              required: ["title", "start", "end"],
             },
           },
         },
@@ -170,11 +170,11 @@ Rules:
             parameters: {
               type: "object",
               properties: {
-                userId: { type: "string" },
+                // userId: { type: "string" },
                 time: { type: "string" },
                
               },
-              required: [ "userId", "time", ],
+              required: [ "time", ],
             },
           },
         },

@@ -36,51 +36,51 @@ app.post("/mcp", async (req, res) => {
     });
 
     // re-register tools
+    // const register = (tool) => {
+    //   server.registerTool(
+    //     tool.name,
+    //     {
+    //       title: tool.name,
+    //       inputSchema: tool.schema,
+    //     },
+    //     async (input) => ({
+    //       content: [
+    //         {
+    //           type: "text",
+    //           text: JSON.stringify(await tool.execute(input)),
+    //         },
+    //       ],
+    //     }),
+    //   );
+    // };
+
     const register = (tool) => {
-      server.registerTool(
-        tool.name,
-        {
-          title: tool.name,
-          inputSchema: tool.schema,
-        },
-        async (input) => ({
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(await tool.execute(input)),
-            },
-          ],
-        }),
-      );
-    };
+  server.registerTool(
+    tool.name,
+    {
+      title: tool.name,
+      inputSchema: tool.schema,
+    },
 
-//     const register = (tool) => {
-//   server.registerTool(
-//     tool.name,
-//     {
-//       title: tool.name,
-//       inputSchema: tool.schema,
-//     },
+    async (input) => {
+      const finalInput = {
+        ...input,
+        userId: req.headers["x-user-id"],
+      };
 
-//     async (input) => {
-//       const finalInput = {
-//         ...input,
-//         userId: req.user._id.toString(),
-//       };
-
-//       return {
-//         content: [
-//           {
-//             type: "text",
-//             text: JSON.stringify(
-//               await tool.execute(finalInput)
-//             ),
-//           },
-//         ],
-//       };
-//     }
-//   );
-// };
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              await tool.execute(finalInput)
+            ),
+          },
+        ],
+      };
+    }
+  );
+};
 
     // register google calendar tools
     register(getMeetingsTool);

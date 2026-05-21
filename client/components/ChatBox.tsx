@@ -5,14 +5,39 @@ import { useChatStore } from "@/store/chatStore";
 import { sendMessage } from "@/lib/api";
 import MessageBubble from "./MessageBubble";
 import { FaArrowUp } from "react-icons/fa";
+import { useAuthStore } from "@/store/authStore";
+
+type UserInfo =
+  | {
+      id?: string;
+      _id?: string;
+      picture: string;
+      name: string;
+      email: string;
+      google?: {
+        connected?: boolean;
+      };
+    }
+  | null
+  | undefined;
+
+type Props = {
+  userInfo?: UserInfo;
+};
 
 
-export default function ChatBox({userId, accessToken}: {userId: string, accessToken: string}) {
+export default function ChatBox({userInfo}: Props) {
   const { messages, addMessage, updateLastMessage } = useChatStore();
   const [input, setInput] = useState("");
+  let accessToken =
+      useAuthStore.getState().accessToken;
+
+   const userId = userInfo?._id;
+  //  console.log(userId, accessToken)
+  //  console.log(userInfo)
 
   const handleSend = async () => {
-    if (!input) return;
+    if (!input || !userId) return;
 
     addMessage({ role: "user", content: input });
     addMessage({ role: "assistant", content: "" });

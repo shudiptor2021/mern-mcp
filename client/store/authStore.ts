@@ -1,20 +1,71 @@
-let accessToken = null as string | null;
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export const setAccessToken = (token: string | null) => {
-  accessToken = token;
+type GoogleInfo = {
+  connected: boolean;
+  accessToken: string;
+  refreshToken: string;
+  expiryDate: number;
 };
 
-export const getAccessToken = () => {
-  return accessToken;
+type User = {
+  _id: string;
+  email: string;
+  name: string;
+  picture?: string;
+
+  tokenVersion: number;
+
+  google?: GoogleInfo;
+
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-let userId = null as string | null;
+type AuthStore = {
+  accessToken: string | null;
 
-export const setUserId = (id: string | null) => {
-  userId = id;
+  user: User | null;
+
+  setAccessToken: (
+    token: string | null
+  ) => void;
+
+  setUser: (
+    user: User | null
+  ) => void;
+
+  logout: () => void;
 };
 
-export const getUserId = () => {
-  return userId;
-};
+export const useAuthStore =
+  create<AuthStore>()(
+    persist(
+      (set) => ({
+        accessToken: null,
 
+        user: null,
+
+        setAccessToken: (
+          token
+        ) =>
+          set({
+            accessToken: token,
+          }),
+
+        setUser: (user) =>
+          set({
+            user,
+          }),
+
+        logout: () =>
+          set({
+            accessToken: null,
+            user: null,
+          }),
+      }),
+      {
+        name: "auth-storage",
+      }
+    )
+  );

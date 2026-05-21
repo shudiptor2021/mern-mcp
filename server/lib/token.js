@@ -9,7 +9,7 @@ export const createAccessToken = (
   const payload = { sub: userId, name, tokenVersion };
 
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "5m",
   });
 };
 

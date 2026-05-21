@@ -15,16 +15,21 @@ export const handleChat = async (req, res) => {
   await saveMessage(userId, "user", message);
 
   // call ai
-  const ai = await runAgent(message, userId);
+  const ai = await runAgent(message, userId, true);
 
   let finalText = "";
 
   // if tool call
   if (ai.type === "tool") {
-    const result = await callMCP(ai.name, {
-      ...ai.args,
-      userId,
-    });
+    // const result = await callMCP(ai.name, {
+    //   ...ai.args,
+    //   userId,
+    // });
+    const result = await callMCP(
+  ai.name,
+  ai.args,
+  userId
+);
 
   //   let cleanResult = "";
 
@@ -39,23 +44,40 @@ export const handleChat = async (req, res) => {
   // }
   const cleanResult = result?.content?.[0]?.text || JSON.stringify(result);
 
+
   const final = await runAgent(
-`You are a helpful assistant.
+  `You are a helpful assistant.
 
 The tool successfully returned data.
 
 User question:
 ${message}
 
-Tool result (authoritative data):
-${typeof cleanResult === "string" 
-  ? cleanResult 
-  : JSON.stringify(cleanResult, null, 2)
-}
+Tool result:
+${cleanResult}
 
-Respond naturally and NEVER say the tool failed.`,
-userId
+Answer naturally.`,
+  userId,
+  false
 );
+console.log(JSON.stringify(final, null, 2));
+//   const final = await runAgent(
+// `You are a helpful assistant.
+
+// The tool successfully returned data.
+
+// User question:
+// ${message}
+
+// Tool result (authoritative data):
+// ${typeof cleanResult === "string" 
+//   ? cleanResult 
+//   : JSON.stringify(cleanResult, null, 2)
+// }
+
+// Respond naturally and NEVER say the tool failed.`,
+// userId
+// );
 
 //      const final = await runAgent(
 //       `User asked: ${message}
@@ -98,6 +120,7 @@ for (let i = 0; i < finalText.length; i += chunkSize) {
 }
 
   await saveMessage(userId, "assistant", finalText);
+  // console.log(JSON.stringify(final, null, 2));
 
   } catch (err) {
   console.error("Streaming error:", err);
