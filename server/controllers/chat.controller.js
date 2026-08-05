@@ -31,6 +31,14 @@ export const handleChat = async (req, res) => {
   userId
 );
 
+if (
+  !result ||
+  !result.content ||
+  !result.content.length
+) {
+  throw new Error("Invalid MCP response");
+}
+
   //   let cleanResult = "";
 
   // try {
@@ -42,7 +50,8 @@ export const handleChat = async (req, res) => {
   //   console.error("Parse error:", err);
   //   cleanResult = result;
   // }
-  const cleanResult = result?.content?.[0]?.text || JSON.stringify(result);
+  const cleanResult = result.content[0].text;
+  // const cleanResult = result?.content?.[0]?.text || JSON.stringify(result);
 
 
   const final = await runAgent(
@@ -56,11 +65,16 @@ ${message}
 Tool result:
 ${cleanResult}
 
-Answer naturally.`,
+Using ONLY the tool result, answer the user naturally.
+Do not call any tool.`,
   userId,
   false
 );
-console.log(JSON.stringify(final, null, 2));
+// console.log(JSON.stringify(final, null, 2));
+
+if (final.type !== "text") {
+  throw new Error("LLM tried to call another tool.");
+}
 //   const final = await runAgent(
 // `You are a helpful assistant.
 
@@ -84,17 +98,17 @@ console.log(JSON.stringify(final, null, 2));
 // Tool result: ${JSON.stringify(cleanResult, null, 2)}
 // Give a helpful natural response.`, userId
 //     );
-    console.log("Final AI:", final);
+    // console.log("Final AI:", final);
 
-  finalText = final?.content || final?.text || "";
+  // finalText = final?.content || final?.text || "";
 // ---------------------------------------
-    // finalText = final.content;
+    finalText = final.content;
 
     // return res.json({
     //   reply: final.content,
     // });
   } else {
-    console.log("AI:", ai);
+    // console.log("AI:", ai);
 
   finalText = ai?.content || ai?.text || "";
     // finalText = ai.content;

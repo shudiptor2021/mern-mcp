@@ -7,12 +7,13 @@ const router = express.Router();
 const auth = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI
+  process.env.REDIRECT_URI,
 );
 
 // 👉 Step 1: redirect user to Google
 router.get("/connect", (req, res) => {
   const { userId } = req.query;
+    // console.log("Connect userId:", userId);
 
   const url = auth.generateAuthUrl({
     access_type: "offline",
@@ -27,18 +28,42 @@ router.get("/connect", (req, res) => {
 // 👉 Step 2: callback from Google
 router.get("/callback", async (req, res) => {
   const { code, state: userId } = req.query;
+  // console.log("Callback userId:", userId);
 
   try {
     const { tokens } = await auth.getToken(code);
 
-    await User.findByIdAndUpdate(userId, {
-      google: {
-        connected: true,
-        refreshToken: tokens.refresh_token,
-        accessToken: tokens.access_token,
-        expiryDate: tokens.expiry_date,
-      },
-    });
+    // await User.findByIdAndUpdate(userId, {
+    //   google: {
+    //     connected: true,
+    //     refreshToken: tokens.refresh_token,
+    //     accessToken: tokens.access_token,
+    //     expiryDate: tokens.expiry_date,
+    //   },
+    // });
+    const user = await User.findById(userId);
+    // console.log("Before:", user);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    user.google.connected = true;
+
+    if (tokens.refresh_token) {
+      user.google.refreshToken = tokens.refresh_token;
+    }
+
+    if (tokens.access_token) {
+      user.google.accessToken = tokens.access_token;
+    }
+
+    if (tokens.expiry_date) {
+      user.google.expiryDate = tokens.expiry_date;
+    }
+
+    await user.save();
+    // console.log("After:", await User.findById(userId));
 
     // res.send("✅ Google Calendar connected সফলভাবে");
     return res.redirect("http://localhost:3000");

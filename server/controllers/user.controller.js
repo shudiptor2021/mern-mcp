@@ -236,6 +236,7 @@ export const getUserInfoHandler = async (req, res) => {
         message: "User not found",
       });
     }
+    // console.log("USERME DB:", user.google);
     return res.json({ user });
   } catch (err) {
     console.log(err);

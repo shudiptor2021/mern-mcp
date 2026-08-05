@@ -30,5 +30,7 @@ export const createEventService = async ({ title, start, end, userId }) => {
     },
   });
 
+  // console.log("EVENT:", res.data);
+
   return res.data;
 };

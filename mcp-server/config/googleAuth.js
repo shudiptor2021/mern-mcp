@@ -5,6 +5,10 @@ import User from "../models/user.model.js";
 export const getCalendarClient = async (userId) => {
   const user = await User.findById(userId);
 
+  // console.log("USER:", user.email);
+  // console.log("CONNECTED:", user.google.connected);
+  // console.log("REFRESH TOKEN:", !!user.google.refreshToken);
+
   if (!user?.google?.connected) {
     throw new Error("Google account not connected");
   }
@@ -18,6 +22,13 @@ export const getCalendarClient = async (userId) => {
   auth.setCredentials({
     refresh_token: user.google.refreshToken,
   });
+
+   try {
+    const token = await auth.getAccessToken();
+    // console.log("ACCESS TOKEN:", token);
+  } catch (err) {
+    console.error("TOKEN ERROR:", err.response?.data || err.message);
+  }
 
   return google.calendar({ version: "v3", auth });
 };

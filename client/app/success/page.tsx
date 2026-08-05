@@ -26,7 +26,9 @@ export default function AuthSuccessPage() {
 
       // immediately user fetch
       const user =await getUser();
+      // console.log("Fetched User:", user);
       useAuthStore.getState().setUser(user);
+      // console.log("Store User:", useAuthStore.getState().user);
       // console.log(user)
 
       // redirect

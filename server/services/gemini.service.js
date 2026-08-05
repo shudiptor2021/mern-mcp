@@ -9,56 +9,13 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
-export const runAgent = async (message, userId, allowTools = true) => {
-  try {
-    const history = await getHistory(userId);
-    // console.log(history)
-    const result = await openai.chat.completions.create({
-      model: "gemini-3-flash-preview",
+const now = new Date();
 
-      messages: [
-        {
-          role: "system",
-          // content: "You are a helpful AI assistant. Be concise and clear.",
-          //           content: `
-          // You are an AI assistant that MUST use tools when needed.
+const today = now.toLocaleDateString("en-CA", {
+  timeZone: "Asia/Dhaka",
+});
 
-          // Rules:
-          // - If user wants to schedule meeting → ALWAYS call create_event
-          // - If time conflict possible → call check_conflict first
-          // - Assume timezone Asia/Dhaka
-          // - NEVER ask unnecessary questions
-          // - Convert natural language time to ISO format
-          // `
-          content: `
-You are an AI assistant.
-
-Rules:
-- ALWAYS use tools when needed
-- timezone Asia/Dhaka
-- return ISO format time
-`
-// content: `
-// You are an AI assistant that has access to backend tools.
-
-// CRITICAL RULES:
-// - You MUST NEVER ask the user for userId, database id, or authentication info
-// - userId is ALWAYS automatically handled by the backend
-// - If a tool requires user-specific data, assume userId is already injected by the server
-// - You MUST call tools instead of asking questions when action is needed
-// - If user asks to create/update/delete todos or calendar events, ALWAYS use tools immediately
-// - timezone Asia/Dhaka
-// - return ISO format time
-// `,
-        },
-        ...history,
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-
-      tools: [
+const tools = [
         // todo tools
         // get todos tool
         {
@@ -178,8 +135,67 @@ Rules:
             },
           },
         },
+      ];
+
+export const runAgent = async (message, userId, allowTools = true) => {
+  try {
+    const history = allowTools ? await getHistory(userId) : [];
+    // const history = await getHistory(userId);
+    // console.log(history)
+    const result = await openai.chat.completions.create({
+      model: "gemini-3-flash-preview",
+
+      messages: [
+        {
+          role: "system",
+          // content: "You are a helpful AI assistant. Be concise and clear.",
+          //           content: `
+          // You are an AI assistant that MUST use tools when needed.
+
+          // Rules:
+          // - If user wants to schedule meeting → ALWAYS call create_event
+          // - If time conflict possible → call check_conflict first
+          // - Assume timezone Asia/Dhaka
+          // - NEVER ask unnecessary questions
+          // - Convert natural language time to ISO format
+          // `
+          content: `
+You are an AI assistant.
+
+Current date: ${today}
+Timezone: Asia/Dhaka.
+
+Rules:
+- Use tools only when available.
+- If tools are disabled, NEVER request a tool.
+- Answer naturally
+- When creating events, ALWAYS use the current year unless the user explicitly specifies another year.
+- Resolve relative dates like tomorrow, next Monday, this Friday using the current date.
+- Return datetime in ISO 8601 format with Asia/Dhaka timezone.
+- Never assume a past year.
+`
+// content: `
+// You are an AI assistant that has access to backend tools.
+
+// CRITICAL RULES:
+// - You MUST NEVER ask the user for userId, database id, or authentication info
+// - userId is ALWAYS automatically handled by the backend
+// - If a tool requires user-specific data, assume userId is already injected by the server
+// - You MUST call tools instead of asking questions when action is needed
+// - If user asks to create/update/delete todos or calendar events, ALWAYS use tools immediately
+// - timezone Asia/Dhaka
+// - return ISO format time
+// `,
+        },
+        ...history,
+        {
+          role: "user",
+          content: message,
+        },
       ],
-      tool_choice: "auto",
+
+      tools: allowTools ? tools : undefined,
+      tool_choice: allowTools ? "auto" : "none",
     });
 
     const messageResponse = result.choices[0]?.message;
