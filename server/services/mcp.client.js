@@ -39,7 +39,8 @@ import axios from "axios";
 export const callMCP = async (toolName, args, userId) => {
   try {
     const res = await axios.post(
-      "http://localhost:4000/mcp",
+      // "http://localhost:4000/mcp",
+      "https://mern-mcp-server.vercel.app/mcp",
       {
         jsonrpc: "2.0",
         id: "1",
