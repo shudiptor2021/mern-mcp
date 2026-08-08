@@ -40,7 +40,7 @@ server.registerTool(
   async () => {
      const meetings = await getMeetings();
     return {
-      content: [
+      // content: [
     //     {
     //   type: "text",
     //   text: JSON.stringify(meetings, null, 2),
@@ -55,7 +55,7 @@ server.registerTool(
     //           .join("\n")
     //       : "No upcoming meetings found.",
     //   },
-      ],
+      // ],
       content: [{ type: "text", text: JSON.stringify(meetings) }],
     };
   }
@@ -107,3 +107,5 @@ app.post("/mcp", async (req, res) => {
 app.listen(4000, ()=> {
     console.log("Server on running on port 4000")
 });
+
+export default app;

@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+const BASE_URL = `${process.env.BASE_URL}`; // backend
+
 export const getAccessTokenServer = async () => {
   const cookieStore = await cookies();
 
@@ -8,7 +10,7 @@ export const getAccessTokenServer = async () => {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
-  const res = await fetch("http://localhost:5000/api/v1/auth/refresh", {
+  const res = await fetch(`${BASE_URL}/auth/refresh`, {
     method: "POST",
     headers: {
       Cookie: cookieString,

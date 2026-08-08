@@ -1,7 +1,7 @@
-const BASE_URL = "http://localhost:5000/api/v1/assistant"; // backend
+const BASE_URL = `${process.env.BASE_URL}`; // backend
 
 export const sendMessage = async (message: string, accessToken: string, userId: string, onChunk: (chunk: string) => void) => {
-  const res = await fetch(`${BASE_URL}/chat`, {
+  const res = await fetch(`${BASE_URL}/assistant/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json",
     Authorization: `Bearer ${accessToken}` },
@@ -26,24 +26,24 @@ export const sendMessage = async (message: string, accessToken: string, userId: 
 // log in with google
 export const googleLogin = async () => {
     window.location.href =
-  "http://localhost:5000/api/v1/auth/google";
+  `${BASE_URL}/auth/google`;
 };
 
 // connect with google calendar
 export const googleCalendarConnect = async (userId: string) => {
     window.location.href =
-  `http://localhost:5000/api/v1/auth/google/calendar/connect?userId=${userId}`;
+  `${BASE_URL}/auth/google/calendar/connect?userId=${userId}`;
 };
 
 
 // TODOS
 export const getTodos = async (userId: string) => {
-  const res = await fetch(`${BASE_URL}/todos?userId=${userId}`);
+  const res = await fetch(`${BASE_URL}/assistant/todos?userId=${userId}`);
   return res.json();
 };
 
 export const createTodo = async (title: string, userId: string) => {
-  const res = await fetch(`${BASE_URL}/todos`, {
+  const res = await fetch(`${BASE_URL}/assistant/todos`, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ title, userId }),
@@ -52,7 +52,7 @@ export const createTodo = async (title: string, userId: string) => {
 };
 
 export const updateTodo = async (id: string, completed: boolean) => {
-  const res = await fetch(`${BASE_URL}/todos/${id}`, {
+  const res = await fetch(`${BASE_URL}/assistant/todos/${id}`, {
     method: "PUT",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ completed }),
@@ -61,7 +61,7 @@ export const updateTodo = async (id: string, completed: boolean) => {
 };
 
 export const deleteTodo = async (id: string) => {
-  await fetch(`${BASE_URL}/todos/${id}`, {
+  await fetch(`${BASE_URL}/assistant/todos/${id}`, {
     method: "DELETE",
   });
 };

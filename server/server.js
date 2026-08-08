@@ -16,7 +16,7 @@ await connectDB();
 // app.use(cors());
 app.use(
     cors({
-        // origin: "https://e-commerce-frontend-bay-sigma.vercel.app",
+        // origin: "",
         origin: "http://localhost:3000",
         credentials: true,
     })

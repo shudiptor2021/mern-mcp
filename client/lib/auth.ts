@@ -4,6 +4,8 @@
 // import { getAccessToken } from "@/store/authStore";
 import { fetchWithAuth } from "./fetchWithAuth";
 
+const BASE_URL = `${process.env.BASE_URL}`; // backend
+
 // get user info
 export const getUser = async () => {
   // const cookieStore = await cookies();
@@ -35,7 +37,7 @@ export const getUser = async () => {
     //   return null;
     // }
 
-    const res = await fetchWithAuth(`http://localhost:5000/api/v1/auth/userme`, {
+    const res = await fetchWithAuth(`${BASE_URL}/auth/userme`, {
         method: "GET",
       },
       // accessToken
@@ -75,7 +77,7 @@ export const userLogout = async () => {
 
     // backend cookie clear
     await fetch(
-      "http://localhost:5000/api/v1/auth/logout",
+      `${BASE_URL}/auth/logout`,
       {
         method: "POST",
         credentials: "include",
