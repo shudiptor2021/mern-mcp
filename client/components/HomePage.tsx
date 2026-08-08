@@ -10,12 +10,16 @@ const HomePage = () => {
     <div className="flex flex-col h-screen w-full overflow-y-auto ">
       <div className="p-4 shadow sticky top-0 w-full flex justify-between items-center bg-white z-10">
         <h1 className="text-2xl font-bold">AI Assistant</h1>
-        <ProfileBox userInfo={userInfo}/>
+        {userInfo && (
+          <ProfileBox userInfo={{ ...userInfo, picture: userInfo.picture ?? '' }} />
+        )}
         {/* <ProfileBox /> */}
       </div>
       <div className="w-full flex justify-center">
        {/* <ChatBox userId={userId} accessToken={accessToken}/> */}
-       {userInfo && <ChatBox userInfo={userInfo}/>}
+       {userInfo && (
+         <ChatBox userInfo={{ ...userInfo, picture: userInfo.picture ?? '' }} />
+       )}
        </div>
     </div>
   )

@@ -37,7 +37,7 @@ export default function ChatBox({userInfo}: Props) {
   //  console.log(userInfo)
 
   const handleSend = async () => {
-    if (!input || !userId) return;
+    if (!input || !userId || !accessToken) return;
 
     addMessage({ role: "user", content: input });
     addMessage({ role: "assistant", content: "" });
