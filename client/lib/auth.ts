@@ -4,7 +4,7 @@
 // import { getAccessToken } from "@/store/authStore";
 import { fetchWithAuth } from "./fetchWithAuth";
 
-const BASE_URL = `${process.env.BASE_URL}`; // backend
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`; // backend
 
 // get user info
 export const getUser = async () => {

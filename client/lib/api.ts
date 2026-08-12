@@ -1,4 +1,4 @@
-const BASE_URL = `${process.env.BASE_URL}`; // backend
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`; // backend
 
 export const sendMessage = async (message: string, accessToken: string, userId: string, onChunk: (chunk: string) => void) => {
   const res = await fetch(`${BASE_URL}/assistant/chat`, {

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-const BASE_URL = `${process.env.BASE_URL}`; // backend
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`; // backend
 
 export const getAccessTokenServer = async () => {
   const cookieStore = await cookies();
