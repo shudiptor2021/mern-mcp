@@ -114,7 +114,7 @@ export const googleAuthCallbackHandler = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect(`http://localhost:3000/success?token=${accessToken}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/success?token=${accessToken}`);
 
     // return res.json({
     //   message: "Google login successfully",
