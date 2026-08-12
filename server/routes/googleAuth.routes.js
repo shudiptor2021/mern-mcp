@@ -66,7 +66,7 @@ router.get("/callback", async (req, res) => {
     // console.log("After:", await User.findById(userId));
 
     // res.send("✅ Google Calendar connected সফলভাবে");
-    return res.redirect("http://localhost:3000");
+    return res.redirect(`${process.env.FRONTEND_URL}`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Auth failed");
