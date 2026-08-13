@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 //   const cookieHeader = cookieStore.toString();
 //   // const refreshToken = cookieStore.get("refreshToken")?.value;
 
-//   const res = await fetch("http://localhost:5000/api/v1/auth/refresh", {
+//   const res = await fetch(`${BASE_URL}/auth/refresh`, {
 //     method: "POST",
 //     credentials: "include",
 //     headers: {
@@ -27,11 +27,13 @@ import { useAuthStore } from "@/store/authStore";
 //   return data.accessToken;
 // };
 
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}`;
+
 
 export const refreshAccessToken = async () => {
   try {
     const res = await fetch(
-      "http://localhost:5000/api/v1/auth/refresh",
+      `${BASE_URL}/auth/refresh`,
       {
         method: "POST",
         credentials: "include",

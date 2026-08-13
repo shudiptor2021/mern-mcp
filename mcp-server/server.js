@@ -62,10 +62,11 @@ server.registerTool(
   }
 );
 
-app.use("/mcp", (req, res, next) => {
-  req.headers.accept = "application/json";
-  next();
-});
+// if backend not sending this
+// app.use("/mcp", (req, res, next) => {
+//   req.headers.accept = "application/json";
+//   next();
+// });
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "healthy" });
