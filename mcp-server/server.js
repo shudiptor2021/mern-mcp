@@ -4,6 +4,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { z } from "zod";
 import dotenv from "dotenv";
 import { getMeetings } from "./tools/calendar.tool.js";
+
 dotenv.config();
 
 const app = express();
@@ -104,8 +105,9 @@ app.post("/mcp", async (req, res) => {
   }
 });
 
-app.listen(4000, ()=> {
-    console.log("Server on running on port 4000")
-});
+// only for local host
+// app.listen(4000, ()=> {
+//     console.log("Server on running on port 4000")
+// });
 
 export default app;
