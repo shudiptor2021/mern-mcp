@@ -89,32 +89,20 @@ app.get("/health", (_req, res) => {
 
 
 app.post("/mcp", async (req, res) => {
-  console.log("========== MCP REQUEST RECEIVED ==========");
-  console.log("HEADERS:", req.headers);
-  console.log("BODY:", req.body);
+  // console.log("HEADERS:", req.headers);
+  // console.log("BODY:", req.body);
   const transport = new StreamableHTTPServerTransport({ enableJsonResponse: true });
 
   res.on("close", () => {
-    console.log("MCP response closed");
     transport.close();
   });
 
   try {
-    console.log("Connecting MCP server...");
     await server.connect(transport); // connect MCP server to this transport
-    console.log("MCP server connected");
     await transport.handleRequest(req, res, req.body); // handle the incoming request
-    console.log("MCP request handled");
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "MCP request failed" });
-
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: "MCP request failed",
-        message: err.message,
-      });
-    }
   }
 });
 
