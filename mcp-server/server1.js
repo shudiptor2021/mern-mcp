@@ -16,19 +16,44 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-await connectDB();
+// await connectDB();
+// new add
+// DB connection
+let dbPromise;
+
+const ensureDB = async () => {
+  if (!dbPromise) {
+    dbPromise = connectDB();
+  }
+
+  await dbPromise;
+};
 
 app.post("/mcp", async (req, res) => {
+  // new add
+  try {
+    console.log("========== MCP REQUEST ==========");
+    console.log("BODY:", req.body);
+    console.log(
+      "USER:",
+      req.headers["x-user-id"]
+    );
+
+    // connect DB
+    await ensureDB();
+
   const transport = new StreamableHTTPServerTransport({
     enableJsonResponse: true,
     useStandardContentType: true,
+    sessionIdGenerator: undefined,
   });
 
   res.on("close", () => {
     transport.close();
   });
 
-  try {
+
+  // try {
     // 🔥 new server per request
     const server = new McpServer({
       name: "calendar-mcp-pro",
@@ -165,6 +190,8 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.listen(4000, () => {
-  console.log("MCP Server running on port 4000");
-});
+export default app;
+
+// app.listen(4000, () => {
+//   console.log("MCP Server running on port 4000");
+// });
