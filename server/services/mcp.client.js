@@ -41,7 +41,7 @@ export const callMCP = async (toolName, args, userId) => {
 
     console.log("========== MCP CALL ==========");
     console.log("toolName:", toolName);
-    console.log("args:", args);
+    console.log("args:", JSON.stringify(args, null, 2));
     console.log("userId:", userId);
 
     const res = await axios.post(
@@ -67,14 +67,43 @@ export const callMCP = async (toolName, args, userId) => {
     );
 
     console.log("MCP STATUS:", res.status);
-    console.log("MCP RESPONSE:", res.data);
+    console.log(JSON.stringify(res.data, null, 2));
 
-    return res.data.result;
+    const result = res.data?.result;
+
+    if (!result) {
+      throw new Error("MCP returned no result");
+    }
+
+    if (result.isError) {
+      const errorText =
+        result.content?.[0]?.text ||
+        "MCP tool execution failed";
+
+      console.error(
+        "MCP TOOL ERROR:",
+        errorText
+      );
+
+      throw new Error(errorText);
+    }
+
+    return result;
+
+    // return res.data.result;
   } catch (err) {
     console.error("MCP call failed:", err.response?.data || err.message);
     console.error("========== MCP ERROR ==========");
     console.error("message:", err.message);
     console.error("status:", err.response?.status);
+    console.error(
+      "response:",
+      JSON.stringify(
+        err.response?.data,
+        null,
+        2
+      )
+    );
     throw err;
   }
 };
