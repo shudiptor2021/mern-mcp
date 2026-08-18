@@ -1,114 +1,197 @@
 import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { z } from "zod";
+
+import { getMeetingsTool } from "./tools/getMeetings.tool.js";
+import { createEventTool } from "./tools/createEvent.tool.js";
+import { checkConflictTool } from "./tools/checkConflict.tool.js";
+import { createTodoTool } from "./tools/todo/createTodo.tool.js";
+import { getTodosTool } from "./tools/todo/getTodos.tool.js";
+import { updateTodoTool } from "./tools/todo/updateTodo.tool.js";
+import { deleteTodoTool } from "./tools/todo/deleteTodo.tool.js";
+import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-import { getMeetings } from "./tools/calendar.tool.js";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+// await connectDB();
+// new add
+// DB connection
+let dbPromise;
 
-const server = new McpServer({
-  name: "my-mcp",
-  version: "1.0.0",
-});
-
-// TODOS
-server.registerTool(
-  "get-todos",
-  {
-    title: "Get Todos",
-    inputSchema: z.object({
-      userId: z.string(),
-    }),
-  },
-  async () => {
-    return {
-      content: [{ type: "text", text: "Todo: Learn AI, Build SaaS" }],
-    };
+const ensureDB = async () => {
+  if (!dbPromise) {
+    dbPromise = connectDB();
   }
-);
 
-// MEETINGS
-server.registerTool(
-  "get_meetings_google_calendar",
-  {
-    title: "Get Meetings From Google Calendar",
-    inputSchema: z.object({}),
-  },
-  async () => {
-     const meetings = await getMeetings();
-    return {
-      // content: [
-    //     {
-    //   type: "text",
-    //   text: JSON.stringify(meetings, null, 2),
-    // },
-    // {
-    //     type: "text",
-    //     text: meetings.length
-    //       ? meetings
-    //           .map(
-    //             (m, i) => `${i + 1}. ${m.summary} at ${m.time}`
-    //           )
-    //           .join("\n")
-    //       : "No upcoming meetings found.",
-    //   },
-      // ],
-      content: [{ type: "text", text: JSON.stringify(meetings) }],
-    };
-  }
-);
-
-// if backend not sending this
-// app.use("/mcp", (req, res, next) => {
-//   req.headers.accept = "application/json";
-//   next();
-// });
-
-app.get("/health", (_req, res) => {
-  res.status(200).json({ status: "healthy" });
-});
-
-
-// app.post("/mcp", async (req, res) => {
-//   const transport = new StreamableHTTPServerTransport({
-//     sessionIdGenerator: undefined,
-//     enableJsonResponse: true,
-//   });
-
-//   res.on("close", () => {
-//     transport.close();
-//   });
-//   await server.connect(transport);
-//   await transport.handleRequest(req, res, req.body);
-// });
-
-
+  await dbPromise;
+};
 
 app.post("/mcp", async (req, res) => {
-  // console.log("HEADERS:", req.headers);
-  // console.log("BODY:", req.body);
-  const transport = new StreamableHTTPServerTransport({ enableJsonResponse: true });
+  // new add
+  try {
+    console.log("========== MCP REQUEST ==========");
+    console.log("BODY:", req.body);
+    console.log(
+      "USER:",
+      req.headers["x-user-id"]
+    );
+
+    // connect DB
+    await ensureDB();
+
+  const transport = new StreamableHTTPServerTransport({
+    enableJsonResponse: true,
+    useStandardContentType: true,
+    sessionIdGenerator: undefined,
+  });
 
   res.on("close", () => {
     transport.close();
   });
 
-  try {
-    await server.connect(transport); // connect MCP server to this transport
-    await transport.handleRequest(req, res, req.body); // handle the incoming request
+
+  // try {
+    // 🔥 new server per request
+    const server = new McpServer({
+      name: "calendar-mcp-pro",
+      version: "2.0.0",
+    });
+
+    // re-register tools
+    // const register = (tool) => {
+    //   server.registerTool(
+    //     tool.name,
+    //     {
+    //       title: tool.name,
+    //       inputSchema: tool.schema,
+    //     },
+    //     async (input) => ({
+    //       content: [
+    //         {
+    //           type: "text",
+    //           text: JSON.stringify(await tool.execute(input)),
+    //         },
+    //       ],
+    //     }),
+    //   );
+    // };
+
+    const register = (tool) => {
+  server.registerTool(
+    tool.name,
+    {
+      title: tool.name,
+      inputSchema: tool.schema,
+    },
+
+    async (input) => {
+      const finalInput = {
+        ...input,
+        userId: req.headers["x-user-id"],
+      };
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              await tool.execute(finalInput)
+            ),
+          },
+        ],
+      };
+    }
+  );
+};
+
+    // register google calendar tools
+    register(getMeetingsTool);
+    register(createEventTool);
+    register(checkConflictTool);
+
+    // register todo tools
+    register(createTodoTool);
+    register(getTodosTool);
+    register(updateTodoTool);
+    register(deleteTodoTool);
+
+    await server.connect(transport); // ✅ now safe
+    await transport.handleRequest(req, res, req.body);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "MCP request failed" });
   }
 });
 
-// only for local host
-// app.listen(4000, ()=> {
-//     console.log("Server on running on port 4000")
+// const server = new McpServer({
+//   name: "calendar-mcp-pro",
+//   version: "2.0.0",
 // });
 
+// // helper
+// const register = (tool) => {
+//   server.registerTool(
+//     tool.name,
+//     {
+//       title: tool.name,
+//       inputSchema: tool.schema,
+//     },
+//     async (input) => ({
+//       content: [
+//         {
+//           type: "text",
+//           text: JSON.stringify(await tool.execute(input)),
+//         },
+//       ],
+//     })
+//   );
+// };
+
+// // register all tools
+// register(getMeetingsTool);
+// register(createEventTool);
+// register(checkConflictTool);
+
+// // routes
+// app.use("/mcp", (req, res, next) => {
+//   req.headers.accept = "application/json";
+//   next();
+// });
+
+// app.post("/mcp", async (req, res) => {
+
+//   const transport = new StreamableHTTPServerTransport({ enableJsonResponse: true });
+
+//   res.on("close", () => {
+//     transport.close();
+//   });
+
+//   try {
+//     await server.connect(transport); // connect MCP server to this transport
+//     await transport.handleRequest(req, res, req.body); // handle the incoming request
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "MCP request failed" });
+//   }
+// });
+
+// app.get("/health", (_req, res) => {
+//   res.json({ status: "ok" });
+// });
+
+// app.listen(4000, () => {
+//   console.log("MCP Server running on port 4000");
+// });
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 export default app;
+
+// app.listen(4000, () => {
+//   console.log("MCP Server running on port 4000");
+// });
