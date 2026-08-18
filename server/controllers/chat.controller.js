@@ -31,6 +31,11 @@ export const handleChat = async (req, res) => {
   userId
 );
 
+console.log("===== AFTER MCP =====");
+console.log("toolResult:", result);
+
+console.log("===== BEFORE SECOND AGENT =====");
+
 if (
   !result ||
   !result.content ||
@@ -71,6 +76,8 @@ Do not call any tool.`,
   false
 );
 // console.log(JSON.stringify(final, null, 2));
+console.log("===== AFTER SECOND AGENT =====");
+console.log("final:", final);
 
 if (final.type !== "text") {
   throw new Error("LLM tried to call another tool.");
