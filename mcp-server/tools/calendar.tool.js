@@ -1,4 +1,4 @@
-// not for server1 this is demo
+// not for server this is demo for oldserver
 import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();

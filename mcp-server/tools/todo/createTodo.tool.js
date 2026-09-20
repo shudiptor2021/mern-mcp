@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000/api/v1/assistant";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 
 export const createTodoTool = {
   name: "create_todo",
@@ -9,7 +9,7 @@ export const createTodoTool = {
     // userId: z.string().optional(),
   }),
   execute: async ({ title, userId }) => {
-    const res = await fetch(`${BACKEND_URL}/todos`, {
+    const res = await fetch(`${BACKEND_URL}/api/v1/assistant/todos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, userId }),

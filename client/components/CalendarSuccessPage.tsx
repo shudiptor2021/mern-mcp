@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { getUser } from "@/lib/auth";
+import Loader from "./Loader";
 
 export default function CalendarSuccessPage() {
   const router = useRouter();
@@ -25,5 +26,5 @@ export default function CalendarSuccessPage() {
     updateUser();
   }, [router]);
 
-  return <div>Connecting Google Calendar...</div>;
+  return <Loader/>;
 }

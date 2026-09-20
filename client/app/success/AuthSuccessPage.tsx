@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { getUser } from "@/lib/auth";
+import Loader from "@/components/Loader";
 
 export default function AuthSuccessPage() {
   const params = useSearchParams();
@@ -37,5 +38,5 @@ export default function AuthSuccessPage() {
     login();
   }, [params, router, setAccessToken]);
 
-  return <div>Logging in...</div>;
+  return <Loader/>;
 }

@@ -1,9 +1,10 @@
 import CalendarSuccessPage from "@/components/CalendarSuccessPage";
+import Loader from "@/components/Loader";
 import { Suspense } from "react";
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Logging in...</div>}>
+    <Suspense fallback={<Loader/>}>
       <CalendarSuccessPage />
     </Suspense>
   );

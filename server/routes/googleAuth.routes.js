@@ -13,7 +13,7 @@ const auth = new google.auth.OAuth2(
 // 👉 Step 1: redirect user to Google
 router.get("/connect", (req, res) => {
   const { userId } = req.query;
-    // console.log("Connect userId:", userId);
+  // console.log("Connect userId:", userId);
 
   const url = auth.generateAuthUrl({
     access_type: "offline",
@@ -29,6 +29,10 @@ router.get("/connect", (req, res) => {
 router.get("/callback", async (req, res) => {
   const { code, state: userId } = req.query;
   // console.log("Callback userId:", userId);
+
+  if (!code || !userId) {
+    return res.status(400).send("Invalid Google OAuth callback");
+  }
 
   try {
     const { tokens } = await auth.getToken(code);
@@ -70,6 +74,43 @@ router.get("/callback", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Auth failed");
+  }
+});
+
+// ========================================  
+// STEP 3: MCP tells Backend that 
+// Google Calendar connection is invalid 
+// ========================================
+
+router.post("/disconnect", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is required" });
+  }
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    user.google.connected = false;
+    user.google.accessToken = null;
+    user.google.refreshToken = null;
+    user.google.expiryDate = null;
+    await user.save();
+    console.log(`Google Calendar disconnected for user: ${userId}`);
+    return res
+      .status(200)
+      .json({ success: true, message: "Google Calendar disconnected" });
+  } catch (error) {
+    console.error("Disconnect Google Calendar error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to disconnect Google Calendar",
+    });
   }
 });
 
