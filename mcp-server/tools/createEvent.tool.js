@@ -10,11 +10,28 @@ export const createEventTool = {
     userId: z.string().optional(),
   }),
   execute: async ({ title, start, end, userId }) => {
-    const event = await createEventService({ title, start, end, userId });
+    try {
+      const event = await createEventService({ title, start, end, userId });
 
-    return {
-      success: true,
-      link: event.htmlLink,
-    };
+      return {
+        success: true,
+        link: event.htmlLink,
+      };
+      // newly added
+    } catch (error) {
+      console.error("CREATE EVENT TOOL ERROR:", error);
+
+      if (error.code === "GOOGLE_CALENDAR_EXPIRED") {
+        return {
+          success: false,
+          connected: false,
+          code: "GOOGLE_CALENDAR_EXPIRED",
+          message:
+            "Google Calendar connection expired. Please reconnect your Google Calendar.",
+        };
+      }
+
+      throw error;
+    }
   },
 };

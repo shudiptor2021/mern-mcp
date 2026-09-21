@@ -42,7 +42,14 @@ export const getCalendarClient = async (userId) => {
       console.log(`Refresh token invalid for user: ${userId}`);
       // Tell backend to update MongoDB
       await disconnectGoogleCalendar(userId);
-      throw new Error("Google Calendar connection expired. Please reconnect.");
+      // throw new Error("Google Calendar connection expired. Please reconnect.");
+      const error = new Error(
+        "Google Calendar connection expired. Please reconnect.",
+      );
+
+      error.code = "GOOGLE_CALENDAR_EXPIRED";
+
+      throw error;
     }
     throw err;
   }
