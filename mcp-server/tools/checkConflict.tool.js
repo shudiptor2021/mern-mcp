@@ -21,11 +21,12 @@ export const checkConflictTool = {
     } catch (error) {
       console.error("CHECK CONFLICT TOOL ERROR:", error);
 
-      if (error.code === "GOOGLE_CALENDAR_EXPIRED") {
+      if (error.code === "GOOGLE_CALENDAR_EXPIRED" ||
+      error.code === "GOOGLE_ACCOUNT_NOT_CONNECTED") {
         return {
           success: false,
           connected: false,
-          code: "GOOGLE_CALENDAR_EXPIRED",
+          code: error.code,
           message:
             "Google Calendar connection expired. Please reconnect your Google Calendar.",
         };
