@@ -25,14 +25,13 @@ type Props = {
   userInfo?: UserInfo;
 };
 
-
-export default function ChatBox({userInfo}: Props) {
+export default function ChatBox({ userInfo }: Props) {
   const { messages, addMessage, updateLastMessage } = useChatStore();
+  const setUser = useAuthStore((state) => state.setUser);
   const [input, setInput] = useState("");
-  let accessToken =
-      useAuthStore.getState().accessToken;
+  let accessToken = useAuthStore.getState().accessToken;
 
-   const userId = userInfo?._id;
+  const userId = userInfo?._id;
   //  console.log(userId, accessToken)
   //  console.log(userInfo)
 
@@ -45,9 +44,43 @@ export default function ChatBox({userInfo}: Props) {
     const userInput = input;
     setInput("");
 
+    // await sendMessage(userInput, accessToken, userId, (chunk) => {
+    //   updateLastMessage(chunk);
+    // });
+
+    // new code
+    let fullResponse = "";
+
     await sendMessage(userInput, accessToken, userId, (chunk) => {
+      fullResponse += chunk;
+
       updateLastMessage(chunk);
     });
+
+    // Google Calendar expired / disconnected
+    const lowerResponse = fullResponse.toLowerCase();
+
+    if (
+      lowerResponse.includes("google calendar connection has expired") ||
+      lowerResponse.includes("google calendar connection expired") ||
+      lowerResponse.includes("google account not connected")
+    ) {
+      const currentUser = useAuthStore.getState().user;
+
+      if (currentUser) {
+        setUser({
+          ...currentUser,
+          google: {
+            ...(currentUser.google ?? {
+              accessToken: "",
+              refreshToken: "",
+              expiryDate: 0,
+            }),
+            connected: false,
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -70,7 +103,11 @@ export default function ChatBox({userInfo}: Props) {
           onChange={(e) => setInput(e.target.value)}
           disabled={!userId}
         />
-        <button onClick={handleSend} disabled={!userId} className="bg-gray-400 hover:bg-gray-400 hover:text-blue-600 cursor-pointer p-4 rounded-full">
+        <button
+          onClick={handleSend}
+          disabled={!userId}
+          className="bg-gray-400 hover:bg-gray-400 hover:text-blue-600 cursor-pointer p-4 rounded-full"
+        >
           <FaArrowUp />
         </button>
       </div>
